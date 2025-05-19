@@ -2,15 +2,16 @@
 import os
 from tabulate import tabulate
 from colorama import Fore, Style
-from .data_manager import read_csv, write_csv, get_doctor_name, get_patient_name, get_schedule_details
-from .data_structures.linked_list import LinkedList
-from .utils import clear_screen, show_breadcrumbs, show_error, show_success, show_help, LoadingAnimation
+# Perbaikan import menggunakan alias (solusi alternatif opsi 3)
+import modules.data_manager as dm
+import modules.data_structures.linked_list as ll
+import modules.utils as utils
 
 def admin_menu(admin_id):
     """Display admin menu and handle admin actions."""
     while True:
-        clear_screen()
-        show_breadcrumbs(["Main Menu", "Admin"])
+        utils.clear_screen()
+        utils.show_breadcrumbs(["Main Menu", "Admin"])
         print(Fore.CYAN + "=" * 50)
         print(Fore.CYAN + Style.BRIGHT + "MENU ADMIN KLINIK")
         print(Fore.CYAN + "=" * 50)
@@ -43,23 +44,23 @@ def admin_menu(admin_id):
         elif choice == "8":
             break
         elif choice == "?":
-            show_help("admin")
+            utils.show_help("admin")
         else:
-            show_error("Pilihan tidak valid. Silakan coba lagi.")
+            utils.show_error("Pilihan tidak valid. Silakan coba lagi.")
 
 def view_all_schedules():
     """View all doctor schedules."""
-    clear_screen()
-    show_breadcrumbs(["Main Menu", "Admin", "Lihat Jadwal"])
+    utils.clear_screen()
+    utils.show_breadcrumbs(["Main Menu", "Admin", "Lihat Jadwal"])
     print(Fore.CYAN + "=" * 80)
     print(Fore.CYAN + Style.BRIGHT + "JADWAL PRAKTEK DOKTER")
     print(Fore.CYAN + "=" * 80)
     
-    loading = LoadingAnimation("Memuat data jadwal...")
+    loading = utils.LoadingAnimation("Memuat data jadwal...")
     loading.start()
     
-    schedules = read_csv("data/jadwal_dokter.csv")
-    doctors = read_csv("data/dokter.csv")
+    schedules = dm.read_csv("data/jadwal_dokter.csv")
+    doctors = dm.read_csv("data/dokter.csv")
     
     # Create doctor dictionary for quick lookup
     doctor_dict = {}
@@ -67,7 +68,7 @@ def view_all_schedules():
         doctor_dict[doctor['id']] = doctor['nama']
     
     # Create linked list to store schedule data
-    schedule_list = LinkedList()
+    schedule_list = ll.LinkedList()
     for schedule in schedules:
         doctor_name = doctor_dict.get(schedule['dokter_id'], "Unknown Doctor")
         schedule_data = {
@@ -104,14 +105,14 @@ def view_all_schedules():
 
 def add_doctor_schedule():
     """Add a new doctor schedule."""
-    clear_screen()
-    show_breadcrumbs(["Main Menu", "Admin", "Tambah Jadwal"])
+    utils.clear_screen()
+    utils.show_breadcrumbs(["Main Menu", "Admin", "Tambah Jadwal"])
     print(Fore.CYAN + "=" * 50)
     print(Fore.CYAN + Style.BRIGHT + "TAMBAH JADWAL DOKTER")
     print(Fore.CYAN + "=" * 50)
     
     # Show available doctors
-    doctors = read_csv("data/dokter.csv")
+    doctors = dm.read_csv("data/dokter.csv")
     print(Fore.YELLOW + "Dokter yang tersedia:")
     for i, doctor in enumerate(doctors, 1):
         print(f"{Fore.WHITE}{i}. {Fore.YELLOW}{doctor['nama']} ({doctor['spesialisasi']})")
@@ -119,7 +120,7 @@ def add_doctor_schedule():
     try:
         doctor_index = int(input(Fore.GREEN + "\nPilih dokter (nomor): " + Fore.WHITE)) - 1
         if doctor_index < 0 or doctor_index >= len(doctors):
-            show_error("Dokter tidak ditemukan.")
+            utils.show_error("Dokter tidak ditemukan.")
             return
         
         doctor_id = doctors[doctor_index]['id']
@@ -131,7 +132,7 @@ def add_doctor_schedule():
         
         day_index = int(input(Fore.GREEN + "\nPilih hari (nomor): " + Fore.WHITE)) - 1
         if day_index < 0 or day_index >= len(days):
-            show_error("Hari tidak valid.")
+            utils.show_error("Hari tidak valid.")
             return
         
         selected_day = days[day_index]
@@ -141,11 +142,11 @@ def add_doctor_schedule():
         
         # Validate inputs
         if not start_time or not end_time or not quota.isdigit():
-            show_error("Input tidak valid.")
+            utils.show_error("Input tidak valid.")
             return
         
         # Generate new schedule ID
-        schedules = read_csv("data/jadwal_dokter.csv")
+        schedules = dm.read_csv("data/jadwal_dokter.csv")
         new_id = f"J{len(schedules) + 1:03d}"
         
         # Add new schedule
@@ -159,17 +160,17 @@ def add_doctor_schedule():
         }
         
         schedules.append(new_schedule)
-        write_csv("data/jadwal_dokter.csv", schedules)
+        dm.write_csv("data/jadwal_dokter.csv", schedules)
         
-        show_success(f"Jadwal berhasil ditambahkan dengan ID {new_id}")
+        utils.show_success(f"Jadwal berhasil ditambahkan dengan ID {new_id}")
         
     except ValueError:
-        show_error("Input tidak valid.")
+        utils.show_error("Input tidak valid.")
 
 def edit_doctor_schedule():
     """Edit an existing doctor schedule."""
-    clear_screen()
-    show_breadcrumbs(["Main Menu", "Admin", "Edit Jadwal"])
+    utils.clear_screen()
+    utils.show_breadcrumbs(["Main Menu", "Admin", "Edit Jadwal"])
     print(Fore.CYAN + "=" * 50)
     print(Fore.CYAN + Style.BRIGHT + "EDIT JADWAL DOKTER")
     print(Fore.CYAN + "=" * 50)
@@ -179,7 +180,7 @@ def edit_doctor_schedule():
     
     schedule_id = input(Fore.GREEN + "\nMasukkan ID jadwal yang akan diedit: " + Fore.WHITE)
     
-    schedules = read_csv("data/jadwal_dokter.csv")
+    schedules = dm.read_csv("data/jadwal_dokter.csv")
     found = False
     
     for i, schedule in enumerate(schedules):
@@ -194,7 +195,7 @@ def edit_doctor_schedule():
             try:
                 day_index = int(input(Fore.GREEN + "\nPilih hari baru (nomor): " + Fore.WHITE)) - 1
                 if day_index < 0 or day_index >= len(days):
-                    show_error("Hari tidak valid.")
+                    utils.show_error("Hari tidak valid.")
                     return
                 
                 selected_day = days[day_index]
@@ -210,7 +211,7 @@ def edit_doctor_schedule():
                 if not quota:
                     quota = schedule['kuota']
                 elif not quota.isdigit():
-                    show_error("Kuota harus berupa angka.")
+                    utils.show_error("Kuota harus berupa angka.")
                     return
                 
                 # Update schedule
@@ -219,21 +220,21 @@ def edit_doctor_schedule():
                 schedules[i]['jam_selesai'] = end_time
                 schedules[i]['kuota'] = quota
                 
-                write_csv("data/jadwal_dokter.csv", schedules)
-                show_success("Jadwal berhasil diperbarui.")
+                dm.write_csv("data/jadwal_dokter.csv", schedules)
+                utils.show_success("Jadwal berhasil diperbarui.")
                 
             except ValueError:
-                show_error("Input tidak valid.")
+                utils.show_error("Input tidak valid.")
             
             break
     
     if not found:
-        show_error("Jadwal tidak ditemukan.")
+        utils.show_error("Jadwal tidak ditemukan.")
 
 def delete_doctor_schedule():
     """Delete a doctor schedule."""
-    clear_screen()
-    show_breadcrumbs(["Main Menu", "Admin", "Hapus Jadwal"])
+    utils.clear_screen()
+    utils.show_breadcrumbs(["Main Menu", "Admin", "Hapus Jadwal"])
     print(Fore.CYAN + "=" * 50)
     print(Fore.CYAN + Style.BRIGHT + "HAPUS JADWAL DOKTER")
     print(Fore.CYAN + "=" * 50)
@@ -243,37 +244,37 @@ def delete_doctor_schedule():
     
     schedule_id = input(Fore.GREEN + "\nMasukkan ID jadwal yang akan dihapus: " + Fore.WHITE)
     
-    schedules = read_csv("data/jadwal_dokter.csv")
-    registrations = read_csv("data/pendaftaran.csv")
+    schedules = dm.read_csv("data/jadwal_dokter.csv")
+    registrations = dm.read_csv("data/pendaftaran.csv")
     
     # Check if there are active registrations for this schedule
     active_registrations = [reg for reg in registrations if reg['jadwal_id'] == schedule_id and reg['status'] != 'Dibatalkan']
     
     if active_registrations:
-        show_error("Tidak dapat menghapus jadwal karena ada pendaftaran aktif.")
+        utils.show_error("Tidak dapat menghapus jadwal karena ada pendaftaran aktif.")
         return
     
     # Remove schedule
     updated_schedules = [sch for sch in schedules if sch['id'] != schedule_id]
     
     if len(updated_schedules) < len(schedules):
-        write_csv("data/jadwal_dokter.csv", updated_schedules)
-        show_success("Jadwal berhasil dihapus.")
+        dm.write_csv("data/jadwal_dokter.csv", updated_schedules)
+        utils.show_success("Jadwal berhasil dihapus.")
     else:
-        show_error("Jadwal tidak ditemukan.")
+        utils.show_error("Jadwal tidak ditemukan.")
 
 def view_patient_data():
     """View registered patients."""
-    clear_screen()
-    show_breadcrumbs(["Main Menu", "Admin", "Data Pasien"])
+    utils.clear_screen()
+    utils.show_breadcrumbs(["Main Menu", "Admin", "Data Pasien"])
     print(Fore.CYAN + "=" * 80)
     print(Fore.CYAN + Style.BRIGHT + "DATA PASIEN TERDAFTAR")
     print(Fore.CYAN + "=" * 80)
     
-    loading = LoadingAnimation("Memuat data pasien...")
+    loading = utils.LoadingAnimation("Memuat data pasien...")
     loading.start()
     
-    patients = read_csv("data/pasien.csv")
+    patients = dm.read_csv("data/pasien.csv")
     
     loading.stop()
     
@@ -297,16 +298,16 @@ def view_patient_data():
 
 def view_all_registrations():
     """View all consultation registrations."""
-    clear_screen()
-    show_breadcrumbs(["Main Menu", "Admin", "Data Pendaftaran"])
+    utils.clear_screen()
+    utils.show_breadcrumbs(["Main Menu", "Admin", "Data Pendaftaran"])
     print(Fore.CYAN + "=" * 110)
     print(Fore.CYAN + Style.BRIGHT + "DATA PENDAFTARAN KONSULTASI")
     print(Fore.CYAN + "=" * 110)
     
-    loading = LoadingAnimation("Memuat data pendaftaran...")
+    loading = utils.LoadingAnimation("Memuat data pendaftaran...")
     loading.start()
     
-    registrations = read_csv("data/pendaftaran.csv")
+    registrations = dm.read_csv("data/pendaftaran.csv")
     
     loading.stop()
     
@@ -316,8 +317,8 @@ def view_all_registrations():
         # Convert to list of lists for tabulate
         table_data = []
         for reg in registrations:
-            patient_name = get_patient_name(reg['pasien_id'])
-            schedule_details = get_schedule_details(reg['jadwal_id'])
+            patient_name = dm.get_patient_name(reg['pasien_id'])
+            schedule_details = dm.get_schedule_details(reg['jadwal_id'])
             
             # Color-code status
             status = reg['status']
@@ -344,19 +345,19 @@ def view_all_registrations():
 
 def view_clinic_statistics():
     """View basic clinic statistics."""
-    clear_screen()
-    show_breadcrumbs(["Main Menu", "Admin", "Statistik"])
+    utils.clear_screen()
+    utils.show_breadcrumbs(["Main Menu", "Admin", "Statistik"])
     print(Fore.CYAN + "=" * 70)
     print(Fore.CYAN + Style.BRIGHT + "STATISTIK KLINIK")
     print(Fore.CYAN + "=" * 70)
     
-    loading = LoadingAnimation("Menganalisis data...")
+    loading = utils.LoadingAnimation("Menganalisis data...")
     loading.start()
     
-    schedules = read_csv("data/jadwal_dokter.csv")
-    doctors = read_csv("data/dokter.csv")
-    patients = read_csv("data/pasien.csv")
-    registrations = read_csv("data/pendaftaran.csv")
+    schedules = dm.read_csv("data/jadwal_dokter.csv")
+    doctors = dm.read_csv("data/dokter.csv")
+    patients = dm.read_csv("data/pasien.csv")
+    registrations = dm.read_csv("data/pendaftaran.csv")
     
     # Count active registrations
     active_registrations = [reg for reg in registrations if reg['status'] != 'Dibatalkan']
@@ -416,7 +417,7 @@ def view_clinic_statistics():
     else:
         # Convert to list of lists for tabulate
         table_data = []
-        for day, count in sorted(reg_by_day.items(), key=lambda x: count, reverse=True):
+        for day, count in sorted(reg_by_day.items(), key=lambda x: x[1], reverse=True):
             table_data.append([day, count])
         
         headers = ["Hari", "Jumlah Pendaftaran"]
