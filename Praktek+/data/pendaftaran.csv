@@ -1,3 +1,0 @@
-id,pasien_id,jadwal_id,tanggal,status,nomor_antrian
-R001,P001,J001,2025-05-19,Dibatalkan,1
-R002,P001,J001,2025-05-19,Terdaftar,1
