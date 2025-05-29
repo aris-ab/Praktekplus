@@ -1,0 +1,8 @@
+id,dokter_id,hari,jam_mulai,jam_selesai,kuota
+J001,D001,Senin,08:00,12:00,10
+J002,D001,Rabu,13:00,17:00,10
+J003,D002,Selasa,08:00,14:00,8
+J004,D003,Kamis,09:00,15:00,12
+J005,D004,Jumat,10:00,16:00,8
+J006,D001,Sabtu,14:00,15:30,5
+J007,D005,Sabtu,12:20,14:30,1
