@@ -55,13 +55,13 @@ def is_valid_time_format(time_str): #
     """Validate time format HH:MM."""
     return re.match(r"^(?:[01]\d|2[0-3]):[0-5]\d$", time_str) is not None
 
-def show_help(context): #
+def show_help(context):
     """Display help information based on context."""
-    clear_screen() #
+    clear_screen()
     # Menggunakan display_header dengan bingkai untuk halaman bantuan agar menonjol
-    display_header(f"BANTUAN APLIKASI: {context.upper()}", width=70, use_frame=True) #
+    display_header(f"BANTUAN APLIKASI: {context.upper()}", width=70, use_frame=True)
 
-    help_text = { #
+    help_text = {
         "main": [
             (Fore.YELLOW + "  Selamat datang di Praktek+!", ""),
             (Fore.WHITE + "  Ini adalah sistem manajemen jadwal dokter klinik.", ""),
@@ -71,7 +71,7 @@ def show_help(context): #
             (Fore.WHITE + "  - Opsi " + Style.BRIGHT + "'?'" + Style.NORMAL + " akan menampilkan layar bantuan ini.", ""),
             (Fore.WHITE + "  - Untuk keluar, pilih opsi " + Style.BRIGHT + "'Keluar'" + Style.NORMAL + " dari menu utama.", "")
         ],
-        "admin": [ #
+        "admin": [
             (Fore.YELLOW + "  Panduan Menu Admin:", ""),
             (Fore.CYAN + "\n  Manajemen Jadwal Dokter:", ""),
             (Fore.WHITE + "  - " + Style.BRIGHT + "Lihat Semua Jadwal:" + Style.NORMAL + " Menampilkan semua jadwal dokter yang ada.", ""),
@@ -83,7 +83,7 @@ def show_help(context): #
             (Fore.WHITE + "  - " + Style.BRIGHT + "Lihat Pendaftaran:" + Style.NORMAL + " Melihat semua riwayat pendaftaran konsultasi.", ""),
             (Fore.WHITE + "  - " + Style.BRIGHT + "Lihat Statistik:" + Style.NORMAL + " Menampilkan statistik penting klinik.", "")
         ],
-        "doctor": [ #
+        "doctor": [
             (Fore.YELLOW + "  Panduan Menu Dokter:", ""),
             (Fore.CYAN + "\n  Manajemen Jadwal Pribadi:", ""),
             (Fore.WHITE + "  - " + Style.BRIGHT + "Lihat Jadwal Praktik Saya:" + Style.NORMAL + " Menampilkan semua jadwal praktik Anda.", ""),
@@ -92,7 +92,7 @@ def show_help(context): #
             (Fore.CYAN + "\n  Manajemen Pasien:", ""),
             (Fore.WHITE + "  - " + Style.BRIGHT + "Lihat Pasien Terdaftar:" + Style.NORMAL + " Menampilkan pasien yang terdaftar pada jadwal praktik Anda.", "")
         ],
-        "patient": [ #
+        "patient": [
             (Fore.YELLOW + "  Panduan Menu Pasien:", ""),
             (Fore.CYAN + "\n  Pencarian & Pendaftaran Konsultasi:", ""),
             (Fore.WHITE + "  - " + Style.BRIGHT + "Lihat Jadwal Dokter:" + Style.NORMAL + " Menampilkan semua jadwal dokter yang tersedia.", ""),
@@ -106,7 +106,8 @@ def show_help(context): #
 
     if context in help_text:
         for line, note in help_text[context]:
-            print(f"{line}{Fore.DIM}{note}{Style.RESET_ALL}")
+            # Perbaikan di sini: Menggunakan Style.DIM bukan Fore.DIM
+            print(f"{line}{Style.DIM}{note}{Style.RESET_ALL}") #
     else:
         print(Fore.RED + "  Konteks bantuan tidak ditemukan.")
     print()
